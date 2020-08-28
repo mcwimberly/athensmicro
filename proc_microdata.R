@@ -1,8 +1,14 @@
+#################################################################################
+# proc_microdata.r
+# Microclimate data input and processing for Athens Mosquito Microclimate project
+# written by Mike Wimberly, University of Oklahoma
+#################################################################################
+
 library(tidyverse)
 library(lubridate)
 
-# Read in the raw data from Courtney's Google Drive archive
-raw_data_path <- "x:/Users/wimb0002/Google Drive/DataLoggerData/2018_rawdata/"
+# Read in the raw data from the Google Drive archive
+raw_data_path <- "c:/Users/wimb0002/Google Drive/DataLoggerData/2018_rawdata/"
 
 # Function to read in the microclimate logger files
 my_read_csv <- function(x) {
@@ -14,7 +20,7 @@ my_read_csv <- function(x) {
   }
 }
 
-# Read in all logger files into a single R object
+# Read all logger files into a single R object
 micro_in <-
   list.files(path = raw_data_path,
              pattern = "*.csv", 
@@ -25,8 +31,6 @@ micro_in <-
   mutate(Date = mdy(Date))
 
 names(micro_in)[c(4, 7)] <- c("temp", "rh")
-
-write_csv(micro_in, "athens_2018_rawdata.csv")
 
 # Remote bad sites
 # R3A2, S1A4, and U34 have malfunctioning loggers
@@ -56,8 +60,12 @@ micro_xtab <- micro_daily %>%
   spread(Site, num_temp)
 
 # Save data
-write_csv(micro_daily, "micro_2018_daily.csv")
-write_csv(micro_xtab, "micro_2018_xtab.csv")
+# Raw data
+write_csv(micro_in, "./outdata/athens_2018_rawdata.csv")
+# Summarized daily data
+write_csv(micro_daily, "./outdata/micro_2018_daily.csv")
+# Cross-tabulation of daily data by logger
+write_csv(micro_xtab, "./outdata/micro_2018_xtab.csv")
 
 # Remote temporary objects
 rm(list = ls())
